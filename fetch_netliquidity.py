@@ -6,11 +6,11 @@ BASE = "https://api.stlouisfed.org/fred/series/observations"
 # series_id -> divisor converting the FRED native unit into BILLIONS
 SERIES = {
     "WALCL":      1000.0,  # USD millions -> USD billions
-    "RPONTSYD":   1.0,     # USD billions
-    "RRPONTSYD":  1.0,     # USD billions
-    "WTREGEN":    1.0,     # USD billions
+    "RPONTSYD":   1.0,     # USD billions (FRED unit: Billions of US Dollars)
+    "RRPONTSYD":  1.0,     # USD billions (FRED unit: Billions of US Dollars)
+    "WTREGEN":    1000.0,  # USD millions -> USD billions  (FRED unit: Millions)
     "ECBASSETSW": 1000.0,  # EUR millions -> EUR billions
-    "JPNASSETS":  0.01,    # JPY 100-millions -> JPY billions (x100 / 1e6)
+    "JPNASSETS":  10.0,    # JPY 100-millions -> JPY billions
 }
 
 # FX pairs from FRED (daily). Direction matters:
