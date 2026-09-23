@@ -40,10 +40,25 @@ FIELDS = ["date",
 
 def fetch(series_id, limit=400):
     """Return {date: value} newest-first, skipping FRED's '.' placeholders."""
-    url = (f"{BASE}?series_id={series_id}&api_key={API_KEY}"
+    if not API_KEY or not API_KEY.strip():
+        raise SystemExit(
+            "FRED_API_KEY is empty. Check that the GitHub secret is named "
+            "exactly 'FRED_API_KEY' and that the workflow passes it through."
+        )
+    url = (f"{BASE}?series_id={series_id}&api_key={API_KEY.strip()}"
            f"&file_type=json&sort_order=desc&limit={limit}")
-    with urllib.request.urlopen(url) as r:
-        data = json.load(r)
+    try:
+        with urllib.request.urlopen(url) as r:
+            data = json.load(r)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise SystemExit(
+            f"FRED rejected '{series_id}' with HTTP {e.code}.\n"
+            f"URL: {url.replace(API_KEY.strip(), '***')}\n"
+            f"Response: {body}"
+        )
+    if "observations" not in data:
+        raise SystemExit(f"Unexpected FRED response for '{series_id}': {data}")
     out = {}
     for obs in data["observations"]:
         if obs["value"] != ".":
